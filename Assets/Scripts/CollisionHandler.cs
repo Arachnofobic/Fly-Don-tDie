@@ -6,24 +6,51 @@ public class CollisionHandler : MonoBehaviour
 {
     [SerializeField] float levelLoadDealay = 2;
     [SerializeField] AudioClip finish;
-    [SerializeField]  AudioClip crash;
-    
+    [SerializeField] AudioClip crash;
+
     [SerializeField] ParticleSystem finishParticles;
     [SerializeField] ParticleSystem crashParticles;
+
 
     AudioSource audioSource;
 
 
     bool isTransitioning = false;
+    bool collisionDisabled = false;
+
+
+
     void Start()
     {
         audioSource = GetComponent<AudioSource>();
     }
 
+    void Update()
+    {
+        RespondToDebugKeys();
+    }
+
+
+    void RespondToDebugKeys()  //cheat keys;
+    {
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            LoadNextLevel();
+
+
+        }
+
+        else if (Input.GetKeyDown(KeyCode.C))
+        {
+            collisionDisabled = !collisionDisabled; //toggle collision;
+        }
+    }
+
     void OnCollisionEnter(Collision other)
     {
-        if (isTransitioning)
-        {
+        if (isTransitioning|| collisionDisabled)
+
+{
             return;
         }
 

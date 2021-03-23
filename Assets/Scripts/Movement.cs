@@ -11,57 +11,87 @@ public class Movement : MonoBehaviour
     [SerializeField] float thrust = 100;
     [SerializeField] float rotationThrust;
     
+    [SerializeField] ParticleSystem rightBoosterParticles;
+    [SerializeField] ParticleSystem leftBoosterParticles;
+    [SerializeField] ParticleSystem mainBoosterParticles;
+    
     Rigidbody rb;
     AudioSource audioSource;
     
 
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
-        audioSource = GetComponent<AudioSource>();
+        rb = GetComponent<Rigidbody>();     
+        audioSource = GetComponent<AudioSource>(); 
        
     }
     
     void Update()
     {
-        ProcessThrust();
-        ProcessRotation();
+        ProcessThrust();  
+        ProcessRotation(); 
     }
 
     
-    void ProcessThrust()
+    void ProcessThrust() //poruszanie
     {
         if (Input.GetKey(KeyCode.Space))
         {
-            
-            rb.AddRelativeForce(Vector3.up * thrust * Time.deltaTime);
-            
-            if(!audioSource.isPlaying)
-            {
-                audioSource.PlayOneShot(mainEngine);
-            }
+
+           Thrusting();
         }
         else
         {
-            audioSource.Stop();
+            StopThrusting();
         }
     }
     
-    void ProcessRotation()
+    void ProcessRotation()  //skręcanie
     {
-
         if (Input.GetKey(KeyCode.A))
         {
-            ApplyRotation(rotationThrust);
+            RotateLeft();
         }
-        
+
+
         else if (Input.GetKey(KeyCode.D))
         {
-          ApplyRotation(-rotationThrust);
+            RotateRight();
+        }
+
+        else
+        {
+            StopRotation();
         }
 
     }
+    
 
+    void Thrusting()
+    {
+        rb.AddRelativeForce(Vector3.up * thrust * Time.deltaTime);
+
+        if (!audioSource.isPlaying)
+        {
+            audioSource.PlayOneShot(mainEngine);
+        }
+
+        if (!mainBoosterParticles.isPlaying)
+
+        {
+            mainBoosterParticles.Play();
+
+        }
+    }
+
+    void StopThrusting()
+    {
+        audioSource.Stop();
+        mainBoosterParticles.Stop();
+
+
+    }
+    
     void ApplyRotation(float rotationThisFrame)
     {
         rb.freezeRotation = true;   //freezing rotation to manualy rotate 
@@ -69,5 +99,37 @@ public class Movement : MonoBehaviour
         rb.freezeRotation = false;  //unfreezing rotation so physics system can take over 
     }
     
-  
+    private void RotateLeft()
+    {
+        ApplyRotation(rotationThrust);
+
+        if (!rightBoosterParticles.isPlaying)
+
+        {
+            rightBoosterParticles.Play();
+        }
+    }
+    
+    
+    
+    private void RotateRight()
+    {
+        ApplyRotation(-rotationThrust);
+
+        if (!leftBoosterParticles.isPlaying)
+
+        {
+            leftBoosterParticles.Play();
+        }
+    }
+    
+    
+    private void StopRotation()
+    {
+        rightBoosterParticles.Stop();
+        leftBoosterParticles.Stop();
+    }
+    
+
+
 }
